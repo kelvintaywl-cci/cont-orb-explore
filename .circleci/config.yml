@@ -44,7 +44,7 @@ jobs:
           name: generate JSON params
           command: |
             jq --null-input \
-              --arg browser "<< pipeline.parameters.broswer >>" \
+              --arg browser "<< pipeline.parameters.browser >>" \
               --arg desktop "<< pipeline.parameters.desktop >>" \
               --arg test_path "<< pipeline.parameters.test_path >>" \
               --arg run_manual_build "<< pipeline.parameters.run_manual_build >>" \
