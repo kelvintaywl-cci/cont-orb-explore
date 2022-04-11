@@ -1,0 +1,60 @@
+version: 2.1
+
+parameters:
+  browser:
+    type: string
+    default: ${DEFAULT_BROWSER}
+  desktop:
+    type: string
+    default: "false"
+  parallelism:
+    description: "Number of containers to run in parallel"
+    type: integer
+    default: 10
+  run_accessibility:
+    type: boolean
+    default: false
+  run_deploy:
+    type: boolean
+    default: false
+  run_manual_build:
+    type: boolean
+    default: false
+  run_smokes:
+    type: boolean
+    default: false
+  target_env:
+    description: "Demo Environment to trigger the smoke tests against"
+    type: string
+    default: ${TARGET_ENV}
+  test_path:
+    description: "Path to test folder, or specific test file"
+    type: string
+    default: "\"./tests/**/*.js\""
+
+orbs:
+  continuation: circleci/continuation@0.2.0
+
+jobs:
+  generate-regressions-config:
+    executor: continuation/default
+    steps:
+      - checkout
+      - run:
+          name: generate JSON params
+          command: |
+            jq --null-input \
+              --arg browser "<< pipeline.parameters.broswer >>" \
+              --arg desktop "<< pipeline.parameters.desktop >>" \
+              --arg test_path "<< pipeline.parameters.test_path >>" \
+              --arg run_manual_build "<< pipeline.parameters.run_manual_build >>" \
+              --arg run_accessibility "<< pipeline.parameters.run_accessibility >>" \
+              '{"browser": $browser, "desktop": $desktop, "test_path": $test_path, "run_manual_build": $run_manual_build, "run_accessibility": $run_accessibility}' >> /home/circleci/test.json
+      - run: |
+          cat /home/circleci/test.json | jq -e .
+
+workflows:
+  setup-regression_run:
+    unless: << pipeline.parameters.run_smokes >>
+    jobs:
+      - generate-regressions-config
