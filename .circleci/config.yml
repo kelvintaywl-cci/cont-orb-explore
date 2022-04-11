@@ -2,8 +2,8 @@ version: 2.1
 
 parameters:
   browser:
-    type: string
-    default: ${DEFAULT_BROWSER}
+    type: env_var_name
+    default: DEFAULT_BROWSER
   desktop:
     type: string
     default: "false"
@@ -41,10 +41,12 @@ jobs:
     steps:
       - checkout
       - run:
+          environment:
+            DEFAULT_BROWSER: chrome
           name: generate JSON params
           command: |
             jq --null-input \
-              --arg browser "<< pipeline.parameters.browser >>" \
+              --arg browser "${<< pipeline.parameters.browser >>}" \
               --arg desktop "<< pipeline.parameters.desktop >>" \
               --arg test_path "<< pipeline.parameters.test_path >>" \
               --arg run_manual_build "<< pipeline.parameters.run_manual_build >>" \
