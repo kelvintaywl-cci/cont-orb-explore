@@ -2,7 +2,7 @@ version: 2.1
 
 parameters:
   browser:
-    type: env_var_name
+    type: string
     default: DEFAULT_BROWSER
   desktop:
     type: string
